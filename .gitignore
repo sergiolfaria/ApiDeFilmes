@@ -1,2 +1,3 @@
-/api de filmes/node_modules
-/api de filmes/.env
+/node_modules
+.env
+
