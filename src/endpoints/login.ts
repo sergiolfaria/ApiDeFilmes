@@ -17,7 +17,7 @@ export default async function login(
          throw new Error("Preencha os campos 'password' e 'email'")
       }
 
-      const [user] = await connection('to_do_list_users')
+      const [user] = await connection('users')
          .where({ email })
 
       if (!user) {
