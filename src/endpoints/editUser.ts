@@ -14,7 +14,7 @@ export default async function editUser(
       console.log(token)
       if (!token) {
          res.statusCode = 401;
-         throw new Error("Cade o token?!")
+         throw new Error("e o Token nada ainda?")
       }
 
       const tokenData = authenticator.getTokenData(token);
@@ -24,7 +24,7 @@ export default async function editUser(
          throw new Error()
       }
 
-      await connection('to_do_list_users')
+      await connection('users')
          .update({ name, nickname })
          .where({ id: tokenData.id })
 

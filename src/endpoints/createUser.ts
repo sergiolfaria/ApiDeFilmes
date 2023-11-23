@@ -36,7 +36,7 @@ export default async function createUser(
     await connection('users').insert(newUser);
 
     const authenticator = new Authenticator();
-    const token = authenticator.generateToken({ id });
+    const token = authenticator.generateToken({ id ,role});
 
     res.status(201).send(token);
   } catch (e: any) {

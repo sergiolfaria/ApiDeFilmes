@@ -3,24 +3,23 @@ import connection from "../connection";
 
 export default async function getFilmes(req: Request, res: Response): Promise<void> {
   try {
-
     const { titulo, diretor, ano, page = "1", limit = "10" } = req.query;
-
-
+    const id = req.params.id ;
     const pageNumber = parseInt(page as string);
     const limitNumber = parseInt(limit as string);
 
-
     let query = connection.select().from('filmes');
 
-   
-    if (titulo) query = query.where('titulo', 'like', `%${titulo}%`);
-    if (diretor) query = query.where('diretor', 'like', `%${diretor}%`);
-    if (ano) query = query.where('ano', '=', parseInt(ano as string));
+    if (id) {
+      query = query.where('id', '=', id);
+    } else {
+      if (titulo) query = query.where('titulo', 'like', `%${titulo}%`);
+      if (diretor) query = query.where('diretor', 'like', `%${diretor}%`);
+      if (ano) query = query.where('ano', '=', parseInt(ano as string));
+    }
 
     const offset = (pageNumber - 1) * limitNumber;
     query = query.offset(offset).limit(limitNumber);
-
 
     const filmes = await query;
 

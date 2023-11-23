@@ -1,6 +1,7 @@
 import * as jwt from "jsonwebtoken";
 export type AuthenticationData = {
   id: string;
+  role:string;
 }
 export class Authenticator {
   
@@ -8,7 +9,7 @@ export class Authenticator {
     return jwt.sign(
       payload,
       process.env.JWT_KEY as string,
-      { expiresIn: "59min" }
+      { expiresIn: "24h" }
     );
   };
 

@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import connection from "../connection";
-import { user } from "../types";
-import { generateId } from "../services/IdGenerator";
 import { Authenticator } from "../services/Authenticator";
 
 export default async function login(
@@ -25,15 +23,21 @@ export default async function login(
          throw new Error('Usuario inexistente')
       }
 
-      if(password !== user.password){
-        res.statusCode = 400;
-        throw new Error('Senha incorreta')
+      if (password !== user.password) {
+         res.statusCode = 400;
+         throw new Error('Senha incorreta')
       }
 
       const authenticator = new Authenticator();
-      const token = authenticator.generateToken({ id: user.id })
 
-      res.status(201).send(token)
+      const token = authenticator.generateToken({ id: user.id, role: user.role })
+
+      const formattedResponse = {
+         token: token
+      };
+
+      res.status(201).send(formattedResponse)
+      console.log(authenticator.getTokenData(token))
 
    } catch (e: any) {
       res.send(e.sqlMessage || e.message);

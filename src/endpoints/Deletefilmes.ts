@@ -1,10 +1,30 @@
+
 import connection from "../connection";
 import { Request, Response } from 'express';
+import { Authenticator } from "../services/Authenticator";
 
 export default async function deleteFilmes(
     req: Request,
     res: Response
 ): Promise<void> {
+    const token = req.headers.authorization as string;
+
+    if (!token) {
+        res.statusCode = 401;
+        throw new Error("e o Token nada ainda?")
+    }
+    const authenticator = new Authenticator();
+
+    const tokenData = authenticator.getTokenData(token);
+    const idverify = tokenData.id
+    const [user] = await connection('users')
+        .where({ idverify })
+
+
+    if (tokenData.role !== "admin" && tokenData.id !== user.id) {
+        res.status(403).json({ error: 'Usuário não autorizado.' });
+        return;
+    }
     const id = parseInt(req.params.id);
 
     try {
