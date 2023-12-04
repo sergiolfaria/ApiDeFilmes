@@ -5,3 +5,7 @@ export type user = {
     name: string
     role: "default" | "admin"
  }
+ export type AuthenticationData = {
+    id: string;
+    role:string;
+  }

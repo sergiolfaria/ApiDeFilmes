@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import connection from "../connection";
 import { Authenticator } from "../services/Authenticator";
+import { compare, hash } from "../services/HashText";
 
 export default async function login(
    req: Request,
@@ -22,10 +23,12 @@ export default async function login(
          res.statusCode = 404
          throw new Error('Usuario inexistente')
       }
-
-      if (password !== user.password) {
+     
+       const  compararsenhas = await compare(password,user.password,)
+       console.log(compararsenhas,password,user.password)
+      if (compararsenhas != true ) {
          res.statusCode = 400;
-         throw new Error('Senha incorreta')
+         throw new Error( 'Senha incorreta')
       }
 
       const authenticator = new Authenticator();

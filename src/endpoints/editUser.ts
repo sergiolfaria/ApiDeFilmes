@@ -10,14 +10,17 @@ export default async function editUser(
       const authenticator = new Authenticator();
       const { name, nickname } = req.body;
       const token = req.headers.authorization;
-
+     
       console.log(token)
       if (!token) {
          res.statusCode = 401;
          throw new Error("e o Token nada ainda?")
       }
+      
 
       const tokenData = authenticator.getTokenData(token);
+
+      
       if (!name && !nickname) {
          res.statusCode = 422
          res.statusMessage = "Informe o(s) novo(s) 'name' ou 'nickname'"

@@ -15,7 +15,7 @@ app.put('/user/edit', editUser)
 app.get('/filmes',getfilmes)
 app.get('/filmes/:id',getfilmes)
 app.post('/filmes',createFilmes )
-app.put('/filmes/:id',updateFilmes)
+app.patch('/filmes/:id',updateFilmes)
 app.delete('/filmes/:id',deleteFilmes) 
 
 

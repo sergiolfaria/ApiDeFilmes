@@ -16,16 +16,14 @@ export default async function deleteFilmes(
     const authenticator = new Authenticator();
 
     const tokenData = authenticator.getTokenData(token);
-    const idverify = tokenData.id
-    const [user] = await connection('users')
-        .where({ idverify })
+    
+    const id = parseInt(req.params.id);
+   
 
-
-    if (tokenData.role !== "admin" && tokenData.id !== user.id) {
+    if (tokenData.role !== "admin" && tokenData.id !== req.params.id) {
         res.status(403).json({ error: 'Usuário não autorizado.' });
         return;
     }
-    const id = parseInt(req.params.id);
 
     try {
         const quantidadeExcluida = await connection('filmes').where({ id }).del();

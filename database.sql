@@ -23,7 +23,7 @@ INSERT INTO filmes (id, titulo, diretor, ano_lancamento, genero, sinopse, classi
 ('018bfa53-ecfb-7667-bf42-dc1605dd78e9','O Senhor dos Anéis: A Sociedade do Anel', 'Peter Jackson', 2001, 'Fantasia', 'Um hobbit chamado Frodo precisa destruir um anel poderoso para impedir o mal de Sauron.', 'PG-13','018bf59b-ea51-7a7b-9ebb-72f4d027b3b1'),
 ('018bfa54-4721-7ed1-bb9d-0aadf1dd415d','Harry Potter e a Pedra Filosofal', 'Chris Columbus', 2001, 'Fantasia', 'Harry Potter descobre que é um bruxo e começa sua jornada em Hogwarts.', 'PG','018bf59b-ea51-7a7b-9ebb-72f4d027b3b1');
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    id varchar(255) PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
