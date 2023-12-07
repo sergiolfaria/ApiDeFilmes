@@ -16,9 +16,9 @@ export default async function updateFilmes(
     }
 
     const tokenData = authenticator.getTokenData(token);
+
     const filmeId = req.params.id;
 
-    // Obtenha o filme completo do banco de dados
     const filme = await connection("filmes")
       .where({ id: filmeId })
       .first();
@@ -28,25 +28,33 @@ export default async function updateFilmes(
       return;
     }
 
-    // Verificar se o usuário é um admin ou dono do filme
     if (tokenData.role !== "admin" && tokenData.id !== filme.user_id) {
       res.status(403).json({ error: "Usuário não autorizado." });
       return;
     }
 
-    // Obtenha os dados a serem atualizados do corpo da requisição
+  
     const { titulo, diretor, ano } = req.body;
 
-    // Faça a atualização no banco de dados
     await connection("filmes")
       .where({ id: filmeId })
       .update({ titulo, diretor, ano });
+      res.status(200).json({message:'Filme atualizado com sucesso', filme});
 
-    // Responda com sucesso
-    res.status(200).json({message:'Filme atualizado com sucesso'});
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    // Trate outros erros conforme necessário
-    res.status(500).json({message: "Erro ao atualizar o filme"});
+    if (error.message === 'Token expired') {
+
+      res.status(401).json({ error: 'Token expirado. Faça o login novamente.' });
+
+    } else if(error.message === 'invalid signature'){
+
+      console.error('Erro ao verificar o token:', error.message);
+
+      res.status(498).json({ message: "Erro Token invalido , insira um token valido para realizar a requisição" });
+
+    }else{
+      res.status(500).json({ message: "Erro ao atualizar o filme" });
+    }
   }
 }

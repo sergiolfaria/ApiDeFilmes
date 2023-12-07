@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import connection from "../connection";
 import { Authenticator } from "../services/Authenticator";
-import { compare, hash } from "../services/HashText";
+import { compare } from "../services/HashText";
 
 export default async function login(
    req: Request,
@@ -26,7 +26,8 @@ export default async function login(
      
        const  compararsenhas = await compare(password,user.password,)
        console.log(compararsenhas,password,user.password)
-      if (compararsenhas != true ) {
+      
+       if (compararsenhas != true ) {
          res.statusCode = 400;
          throw new Error( 'Senha incorreta')
       }
@@ -42,7 +43,7 @@ export default async function login(
       res.status(201).send(formattedResponse)
       console.log(authenticator.getTokenData(token))
 
-   } catch (e: any) {
-      res.send(e.sqlMessage || e.message);
+   } catch (error: any) {
+      res.send(error.sqlMessage || error.message);
    }
 }

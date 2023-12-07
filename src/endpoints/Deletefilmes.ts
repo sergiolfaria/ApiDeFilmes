@@ -16,9 +16,9 @@ export default async function deleteFilmes(
     const authenticator = new Authenticator();
 
     const tokenData = authenticator.getTokenData(token);
-    
+
     const id = parseInt(req.params.id);
-   
+
 
     if (tokenData.role !== "admin" && tokenData.id !== req.params.id) {
         res.status(403).json({ error: 'Usuário não autorizado.' });
@@ -33,8 +33,20 @@ export default async function deleteFilmes(
         } else {
             res.status(404).json({ error: 'Filme não encontrado.' });
         }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Erro ao excluir o filme.' });
+    } catch (error: any) {
+        if (error.message === 'Token expired') {
+
+            res.status(401).json({ error: 'Token expirado. Faça o login novamente.' });
+
+        } else if (error.message === 'invalid signature') {
+
+            console.error('Erro ao verificar o token:', error.message);
+
+            res.status(498).json({ message: "Erro Token invalido , insira um token valido para realizar a requisição" });
+
+        } else {
+            console.error(error);
+            res.status(500).json({ error: 'Erro ao excluir o filme.' });
+        }
     }
 }
