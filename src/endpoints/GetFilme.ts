@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
 import connection from "../connection";
-import { validOrderBy } from "../types";
 
 export default async function getFilmes(req: Request, res: Response): Promise<void> {
   try {
-    const { titulo, diretor, ano, offset = "0", limit = "10", orderby = "asc" } = req.query;
+    const { titulo, diretor, ano, offset = "0", limit = "10", orderBy = 'id', sort = 'asc' } = req.query;
     const id = req.params.id;
     const offsetNumber = parseInt(offset as string);
     const limitNumber = parseInt(limit as string);
@@ -25,10 +24,13 @@ export default async function getFilmes(req: Request, res: Response): Promise<vo
       if (ano) query = query.where('ano', '=', parseInt(ano as string));
     }
 
-    
-    const orderBy = validOrderBy.includes(orderby as string) ? (orderby as string) : "asc";
+    // Adicione lógica para ordenação e classificação
+    if (orderBy) {
+      // Especifique manualmente os tipos
+      query = query.orderBy(orderBy as string, sort as 'asc' | 'desc');
+    }
 
-    query = query.orderBy('titulo', orderBy).offset(offsetNumber).limit(limitNumber);
+    query = query.offset(offsetNumber).limit(limitNumber);
 
     const filmes = await query;
 
@@ -39,19 +41,13 @@ export default async function getFilmes(req: Request, res: Response): Promise<vo
     }
   } catch (error: any) {
     if (error.message === 'Token expired') {
-
       res.status(401).json({ error: 'Token expirado. Faça o login novamente.' });
-
-  } else if (error.message === 'invalid signature') {
-
+    } else if (error.message === 'invalid signature') {
       console.error('Erro ao verificar o token:', error.message);
-
-      res.status(498).json({ message: "Erro Token invalido , insira um token valido para realizar a requisição" });
-
-  } else {
-      res.status(500).json({ message: "Erro ao buscar filmes.'" });
-  }
+      res.status(498).json({ message: "Erro Token invalido, insira um token valido para realizar a requisição" });
+    } else {
+      res.status(500).json({ message: "Erro ao buscar filmes." });
+    }
     console.error(error);
-    
   }
 }

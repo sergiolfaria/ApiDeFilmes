@@ -11,42 +11,50 @@ export default async function createUser(
 ): Promise<void> {
   try {
     const { name, role, email, password } = req.body;
-    // Validando se o valor de 'role' é válido
+
     if (!["default", "admin"].includes(role)) {
-      res.statusCode = 422;
-      throw new Error("O campo 'role' deve ser 'default' ou 'admin'");
+      res.send(422).send("O campo 'role' deve ser 'default' ou 'admin'");
+      return;
     }
-    
+
     if (!name || !role || !email || !password) {
-      res.statusCode = 422;
-      throw new Error("Preencha os campos 'name','role', 'password' e 'email'");
+      res.status(422).send("Preencha os campos 'name','role', 'password' e 'email'");
+      return;
     }
     
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      res.status(406).send("O formato do email é inválido.");
+      return;
+    }
+    
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      res.status(406).send("A senha deve ter no mínimo 8 caracteres, incluindo pelo menos um caractere especial uma Letra e um numero.");
+      return;
+    }
+
     const [existingUser] = await connection('users').where({ email });
-    
+
     if (existingUser) {
-      res.statusCode = 409;
-      throw new Error('Email já cadastrado');
+      res.status(409).send('Email já cadastrado');
+      return;
     }
-    
+
     const id: string = generateId();
     const encryptedPass = await hash(password);
 
-   
-
     const newUser: user = { id, name, role, email, password: encryptedPass };
-
- 
 
     await connection('users').insert(newUser);
 
     const authenticator = new Authenticator();
-    const token = authenticator.generateToken({ id ,role});
+    const token = authenticator.generateToken({ id, role });
     const formattedResponse = {
       token: token
-   };
+    };
     res.status(201).send(formattedResponse);
   } catch (e: any) {
-    res.send(e.sqlMessage || e.message);
+    res.send(500).send('ocorreu um erro ao criar o usuario');
   }
 }
